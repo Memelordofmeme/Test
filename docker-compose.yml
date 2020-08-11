@@ -1,0 +1,60 @@
+version: '3'
+services:
+    node1:
+        image: cassandra
+        container_name: cassandra-1
+        environment:
+          - "CASSANDRA_SEEDS=172.30.0.2"
+          - "CASSANDRA_CLUSTER_NAME=clustermem"
+          - "CASSANDRA_DC=dcnameidk"
+          - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
+        restart: always
+        volumes:
+          - "./volume/node1/var/lib/cassandra:/var/lib/cassandra"
+        networks:
+            dc1ring:
+                ipv4_address: 172.30.0.2
+        ports:
+            - 9042:9042
+    node2:
+        image: cassandra
+        container_name: cassandra-2
+        environment:
+          - "CASSANDRA_SEEDS=172.30.0.2"
+          - "CASSANDRA_CLUSTER_NAME=clustermem"
+          - "CASSANDRA_DC=dcnameidk"
+          - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
+        restart: always
+        volumes:
+          - "./volume/node2/var/lib/cassandra:/var/lib/cassandra"
+        networks:
+            dc1ring:
+                ipv4_address: 172.30.0.3
+        ports:
+            - 9043:9042
+        depends_on:
+          - node1
+    node3:
+        image: cassandra
+        container_name: cassandra-3
+        environment:
+          - "CASSANDRA_SEEDS=172.30.0.2"
+          - "CASSANDRA_CLUSTER_NAME=clustermem"
+          - "CASSANDRA_DC=dcnameidk"
+          - "CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch"
+        restart: always
+        volumes:
+          - "./volume/node3/var/lib/cassandra:/var/lib/cassandra"
+        networks:
+            dc1ring:
+                ipv4_address: 172.30.0.4
+        ports:
+            - 9044:9042
+        depends_on:
+          - node1
+networks:
+    dc1ring:
+        ipam:
+            driver: default
+            config:
+                - subnet: 172.30.0.0/16
